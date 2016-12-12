@@ -15,6 +15,7 @@ export interface BuildContext {
   runMinifyJs?: boolean;
   runMinifyCss?: boolean;
   optimizeJs?: boolean;
+  requiresTranspileDownlevel?: boolean;
 
   bundler?: string;
   fileCache?: FileCache;

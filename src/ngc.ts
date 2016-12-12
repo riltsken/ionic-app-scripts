@@ -19,7 +19,7 @@ export function ngc(context: BuildContext, configFile?: string) {
 
 export function ngcWorker(context: BuildContext, configFile: string) {
   const compiler = new AotCompiler(context, { entryPoint: process.env.IONIC_APP_ENTRY_POINT, rootDir: context.rootDir, tsConfigPath: process.env.IONIC_TS_CONFIG });
-  return compiler.compile();
+  return compiler.compile(context);
 }
 
 const taskInfo: TaskInfo = {

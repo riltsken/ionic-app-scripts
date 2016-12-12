@@ -41,13 +41,10 @@ export function bundleUpdate(changedFiles: ChangedFile[], context: BuildContext)
 
 
 export function buildJsSourceMaps(context: BuildContext) {
-  if (context.bundler === BUNDLER_ROLLUP) {
-    const rollupConfig = getRollupConfig(context, null);
-    return rollupConfig.sourceMap;
+  if (process.env.IONIC_GENERATE_SOURCE_MAP) {
+    return true;
   }
-
-  // TODO - read this from webpack config (could be multiple values)
-  return true;
+  return false;
 }
 
 

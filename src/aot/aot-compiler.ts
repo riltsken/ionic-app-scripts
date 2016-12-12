@@ -47,9 +47,13 @@ export class AotCompiler {
     this.reflector = new StaticReflector(this.reflectorHost);
   }
 
-  compile() {
+  compile(context: BuildContext) {
     return Promise.resolve().then(() => {
-    }).then(() => {
+      if (this.tsConfig.parsed.options.target !== ScriptTarget.Latest) {
+        context.requiresTranspileDownlevel = true;
+      }
+      this.tsConfig.parsed.options.target = ScriptTarget.Latest;
+
       clearDiagnostics(this.context, DiagnosticsType.TypeScript);
       const i18nOptions: NgcCliOptions = {
         i18nFile: undefined,

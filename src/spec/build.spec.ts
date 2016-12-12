@@ -11,6 +11,7 @@ import * as transpile from '../transpile';
 
 describe('build', () => {
   beforeEach(() => {
+    spyOn(build, 'validateRequiredFilesExist').and.returnValue(Promise.resolve());
     spyOn(copy, 'copy').and.returnValue(Promise.resolve());
     spyOn(ngc, 'ngc').and.returnValue(Promise.resolve());
     spyOn(bundle, 'bundle').and.returnValue(Promise.resolve());
@@ -19,52 +20,84 @@ describe('build', () => {
     spyOn(minify, 'minifyCss').and.returnValue(Promise.resolve());
     spyOn(lint, 'lint').and.returnValue(Promise.resolve());
     spyOn(transpile, 'transpile').and.returnValue(Promise.resolve());
+    spyOn(transpile, 'transpileBundle').and.returnValue(Promise.resolve());
   });
 
-  describe('build', () => {
-    it('isProd', () => {
-      let context: BuildContext = {
-        isProd: true,
-        optimizeJs: true,
-        runMinifyJs: true,
-        runMinifyCss: true,
-        runAot: true
-      };
+  it('should do a prod build', () => {
+    const context = getProdContext();
 
-      build.build(context).then(() => {
-        expect(copy.copy).toHaveBeenCalled();
-        expect(ngc.ngc).toHaveBeenCalled();
-        expect(bundle.bundle).toHaveBeenCalled();
-        expect(minify.minifyJs).toHaveBeenCalled();
-        expect(sass.sass).toHaveBeenCalled();
-        expect(minify.minifyCss).toHaveBeenCalled();
-        expect(lint.lint).toHaveBeenCalled();
+    console.dir(build);
+    build.build(context).then(() => {
+      expect(copy.copy).toHaveBeenCalled();
+      expect(ngc.ngc).toHaveBeenCalled();
+      expect(bundle.bundle).toHaveBeenCalled();
+      expect(minify.minifyJs).toHaveBeenCalled();
+      expect(sass.sass).toHaveBeenCalled();
+      expect(minify.minifyCss).toHaveBeenCalled();
+      expect(lint.lint).toHaveBeenCalled();
 
-        expect(transpile.transpile).not.toHaveBeenCalled();
-      });
-    });
-
-    it('isDev', () => {
-      let context: BuildContext = {
-        isProd: false,
-        optimizeJs: false,
-        runMinifyJs: false,
-        runMinifyCss: false,
-        runAot: false
-      };
-
-      build.build(context).then(() => {
-        expect(copy.copy).toHaveBeenCalled();
-        expect(transpile.transpile).toHaveBeenCalled();
-        expect(bundle.bundle).toHaveBeenCalled();
-        expect(sass.sass).toHaveBeenCalled();
-        expect(lint.lint).toHaveBeenCalled();
-
-        expect(ngc.ngc).not.toHaveBeenCalled();
-        expect(minify.minifyJs).not.toHaveBeenCalled();
-        expect(minify.minifyCss).not.toHaveBeenCalled();
-      });
+      expect(transpile.transpile).not.toHaveBeenCalled();
+    }).catch((err) => {
+      console.log('err: ', err);
+      expect(true).toEqual(false);
     });
   });
 
+  it('should do a dev build', () => {
+    let context: BuildContext = {
+      isProd: false,
+      optimizeJs: false,
+      runMinifyJs: false,
+      runMinifyCss: false,
+      runAot: false
+    };
+
+    build.build(context).then(() => {
+      expect(copy.copy).toHaveBeenCalled();
+      expect(transpile.transpile).toHaveBeenCalled();
+      expect(bundle.bundle).toHaveBeenCalled();
+      expect(sass.sass).toHaveBeenCalled();
+      expect(lint.lint).toHaveBeenCalled();
+
+      expect(ngc.ngc).not.toHaveBeenCalled();
+      expect(minify.minifyJs).not.toHaveBeenCalled();
+      expect(minify.minifyCss).not.toHaveBeenCalled();
+    }).catch((err) => {
+      console.log('err: ', err);
+      expect(true).toEqual(false);
+    });
+  });
+
+  /*it('should not call transpileBundle when flag is not set', (done: Function) => {
+
+    const context = getProdContext();
+    context.requiresTranspileDownlevel = false;
+
+    build.build(context).then(() => {
+      expect(transpile.transpileBundle).not.toHaveBeenCalled();
+      done();
+    });
+  });
+
+  it('should call transpileBundle when flag is set', (done: Function) => {
+
+    const context = getProdContext();
+    context.requiresTranspileDownlevel = true;
+
+    build.build(context).then(() => {
+      expect(transpile.transpileBundle).toHaveBeenCalled();
+      done();
+    });
+  });
+  */
 });
+
+function getProdContext(): BuildContext {
+  return {
+    isProd: true,
+    optimizeJs: true,
+    runMinifyJs: true,
+    runMinifyCss: true,
+    runAot: true
+  };
+}
