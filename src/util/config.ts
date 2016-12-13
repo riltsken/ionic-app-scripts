@@ -88,6 +88,9 @@ export function generateContext(context?: BuildContext): BuildContext {
   const cleanBeforeCopy = getConfigValue(context, '--cleanBeforeCopy', null, ENV_CLEAN_BEFORE_COPY, ENV_CLEAN_BEFORE_COPY.toLowerCase(), null);
   setProcessEnvVar(ENV_CLEAN_BEFORE_COPY, cleanBeforeCopy);
 
+  const enableClosure = getConfigValue(context, '--enableClosure', null, ENV_ENABLE_CLOSURE, ENV_ENABLE_CLOSURE.toLowerCase(), null);
+  setProcessEnvVar(ENV_ENABLE_CLOSURE, enableClosure);
+
   setProcessEnvVar(ENV_CLOSURE_JAR, join(getProcessEnvVar(ENV_VAR_APP_SCRIPTS_DIR), 'bin', 'closure-compiler.jar'));
 
   const outputJsFileName = getConfigValue(context, '--outputJsFileName', null, ENV_OUTPUT_JS_FILE_NAME, ENV_OUTPUT_JS_FILE_NAME.toLowerCase(), 'main.js');
@@ -409,7 +412,6 @@ function getAppPackageJsonData(context: BuildContext) {
 
 const BUILD_DIR = 'build';
 const SRC_DIR = 'src';
-const TMP_DIR = '.tmp';
 const WWW_DIR = 'www';
 const WWW_INDEX_FILENAME = 'index.html';
 
@@ -424,6 +426,7 @@ const ENV_TS_CONFIG = 'IONIC_TS_CONFIG';
 const ENV_APP_ENTRY_POINT = 'IONIC_APP_ENTRY_POINT';
 const ENV_GLOB_UTIL = 'IONIC_GLOB_UTIL';
 const ENV_CLEAN_BEFORE_COPY = 'IONIC_CLEAN_BEFORE_COPY';
+const ENV_ENABLE_CLOSURE = 'IONIC_ENABLE_CLOSURE';
 const ENV_CLOSURE_JAR = 'IONIC_CLOSURE_JAR';
 const ENV_OUTPUT_JS_FILE_NAME = 'IONIC_OUTPUT_JS_FILE_NAME';
 const ENV_OUTPUT_JS_MAP_FILE_NAME = 'IONIC_OUTPUT_JS_MAP_FILE_NAME';

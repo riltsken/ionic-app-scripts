@@ -325,7 +325,7 @@ describe('config', () => {
       const result2 = hasArg('-t');
       expect(result).toBeTruthy();
       expect(result2).toBeTruthy();
-    })
+    });
   });
 
   let context: BuildContext;

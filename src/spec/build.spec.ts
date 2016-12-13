@@ -11,7 +11,6 @@ import * as transpile from '../transpile';
 
 describe('build', () => {
   beforeEach(() => {
-    spyOn(build, 'validateRequiredFilesExist').and.returnValue(Promise.resolve());
     spyOn(copy, 'copy').and.returnValue(Promise.resolve());
     spyOn(ngc, 'ngc').and.returnValue(Promise.resolve());
     spyOn(bundle, 'bundle').and.returnValue(Promise.resolve());
@@ -20,13 +19,17 @@ describe('build', () => {
     spyOn(minify, 'minifyCss').and.returnValue(Promise.resolve());
     spyOn(lint, 'lint').and.returnValue(Promise.resolve());
     spyOn(transpile, 'transpile').and.returnValue(Promise.resolve());
-    spyOn(transpile, 'transpileBundle').and.returnValue(Promise.resolve());
   });
 
-  it('should do a prod build', () => {
-    const context = getProdContext();
+  it('isProd', (done: Function) => {
+    let context: BuildContext = {
+      isProd: true,
+      optimizeJs: true,
+      runMinifyJs: true,
+      runMinifyCss: true,
+      runAot: true
+    };
 
-    console.dir(build);
     build.build(context).then(() => {
       expect(copy.copy).toHaveBeenCalled();
       expect(ngc.ngc).toHaveBeenCalled();
@@ -37,13 +40,11 @@ describe('build', () => {
       expect(lint.lint).toHaveBeenCalled();
 
       expect(transpile.transpile).not.toHaveBeenCalled();
-    }).catch((err) => {
-      console.log('err: ', err);
-      expect(true).toEqual(false);
+      done();
     });
   });
 
-  it('should do a dev build', () => {
+  it('isDev', (done: Function) => {
     let context: BuildContext = {
       isProd: false,
       optimizeJs: false,
@@ -62,42 +63,7 @@ describe('build', () => {
       expect(ngc.ngc).not.toHaveBeenCalled();
       expect(minify.minifyJs).not.toHaveBeenCalled();
       expect(minify.minifyCss).not.toHaveBeenCalled();
-    }).catch((err) => {
-      console.log('err: ', err);
-      expect(true).toEqual(false);
-    });
-  });
-
-  /*it('should not call transpileBundle when flag is not set', (done: Function) => {
-
-    const context = getProdContext();
-    context.requiresTranspileDownlevel = false;
-
-    build.build(context).then(() => {
-      expect(transpile.transpileBundle).not.toHaveBeenCalled();
       done();
     });
   });
-
-  it('should call transpileBundle when flag is set', (done: Function) => {
-
-    const context = getProdContext();
-    context.requiresTranspileDownlevel = true;
-
-    build.build(context).then(() => {
-      expect(transpile.transpileBundle).toHaveBeenCalled();
-      done();
-    });
-  });
-  */
 });
-
-function getProdContext(): BuildContext {
-  return {
-    isProd: true,
-    optimizeJs: true,
-    runMinifyJs: true,
-    runMinifyCss: true,
-    runAot: true
-  };
-}

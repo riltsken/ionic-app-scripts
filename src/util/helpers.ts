@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import { basename, dirname, extname, join } from 'path';
 import { BuildContext, File } from './interfaces';
 import { BuildError } from './errors';
@@ -206,4 +207,8 @@ export function stringSplice(source: string, startIndex: number, numToDelete: nu
 
 export function toUnixPath(filePath: string) {
   return filePath.replace(/\\/g, '/');
+}
+
+export function generateRandomHexString(numCharacters: number) {
+  return randomBytes(Math.ceil(numCharacters / 2)).toString('hex').slice(0, numCharacters);
 }

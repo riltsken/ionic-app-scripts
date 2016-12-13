@@ -12,8 +12,7 @@ import { minifyCss, minifyJs } from './minify';
 import { ngc } from './ngc';
 import { sass, sassUpdate } from './sass';
 import { templateUpdate } from './template';
-import { transpile, transpileBundle, transpileUpdate, transpileDiagnosticsOnly } from './transpile';
-
+import { transpile, transpileUpdate, transpileDiagnosticsOnly } from './transpile';
 
 export function build(context: BuildContext) {
   setContext(context);
@@ -50,9 +49,7 @@ function buildWorker(context: BuildContext) {
   });
 }
 
-// export just for mocking
 export function validateRequiredFilesExist() {
-  console.log('Why you being called!!!!!!!!');
   // for now, just do the entry point
   // eventually this could be Promise.all and load a bunch of stuff
   return readFileAsync(process.env.IONIC_APP_ENTRY_POINT);
@@ -70,11 +67,6 @@ function buildProject(context: BuildContext) {
   return compilePromise
     .then(() => {
       return bundle(context);
-    })
-    .then(() => {
-      if (context.requiresTranspileDownlevel) {
-        return transpileBundle(context);
-      }
     })
     .then(() => {
       const minPromise = (context.runMinifyJs) ? minifyJs(context) : Promise.resolve();

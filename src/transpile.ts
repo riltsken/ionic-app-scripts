@@ -300,7 +300,6 @@ function writeTranspiledFilesCallback(fileCache: FileCache, sourcePath: string, 
 }
 
 export function transpileBundle(context: BuildContext) {
-  console.log('AHHHHHHHHHHHHHHH');
   const logger = new Logger('transpile bundle');
   try {
     const bundlePath = path.join(context.buildDir, process.env.IONIC_OUTPUT_JS_FILE_NAME);

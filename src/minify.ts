@@ -2,6 +2,7 @@ import { BuildContext } from './util/interfaces';
 import { cleancss } from './cleancss';
 import { closure, isClosureSupported } from './closure';
 import { Logger } from './logger/logger';
+import { transpileBundle } from './transpile';
 import { uglifyjs } from './uglifyjs';
 
 
@@ -29,15 +30,26 @@ function minifyWorker(context: BuildContext) {
 
 
 export function minifyJs(context: BuildContext) {
-  if (isClosureSupported(context)) {
-    // use closure if it's supported and local executable provided
-    return closure(context);
-  }
+  return isClosureSupported(context).then((result: boolean) => {
+    if (result) {
+      return closure(context);
+    }
 
-  // default to uglify if no closure
-  return uglifyjs(context);
+    return runUglify(context);
+  });
 }
 
+function runUglify(context: BuildContext) {
+  // with uglify, we need to make sure the bundle is es5 first
+  return Promise.resolve()
+  .then(() => {
+    if (context.requiresTranspileDownlevel) {
+      return transpileBundle(context);
+    }
+  }).then(() => {
+    return uglifyjs(context);
+  });
+}
 
 export function minifyCss(context: BuildContext) {
   return cleancss(context);
