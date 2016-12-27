@@ -6,7 +6,7 @@ module.exports = {
   entry: process.env.IONIC_APP_ENTRY_POINT,
   output: {
     path: '{{BUILD}}',
-    filename: process.env.IONIC_OUTPUT_JS_FILE_NAME,
+    filename: '[name].js',
     devtoolModuleFilenameTemplate: ionicWebpackFactory.getSourceMapperFunction(),
   },
   devtool: process.env.IONIC_GENERATE_SOURCE_MAP ? process.env.IONIC_SOURCE_MAP_TYPE : '',
@@ -31,7 +31,9 @@ module.exports = {
   },
 
   plugins: [
-    ionicWebpackFactory.getIonicEnvironmentPlugin()
+    ionicWebpackFactory.getIonicEnvironmentPlugin(),
+    ionicWebpackFactory.getNonIonicCommonChunksPlugin(),
+    ionicWebpackFactory.getIonicCommonChunksPlugin()
   ],
 
   // Some libraries import Node modules but don't use them in the browser.
