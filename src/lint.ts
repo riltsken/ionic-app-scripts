@@ -70,7 +70,14 @@ function lintFiles(context: BuildContext, program: ts.Program, filePaths: string
   for (const filePath of filePaths) {
     promises.push(lintFile(context, program, filePath));
   }
-  return Promise.all(promises);
+  return Promise.all(promises).then((result) => {
+    return new Promise((resolve, reject) => {
+        if (result.indexOf(false) === -1) {
+            reject();
+        };
+        resolve();
+    })
+  });
 }
 
 function lintFile(context: BuildContext, program: ts.Program, filePath: string): Promise<any> {
@@ -90,6 +97,7 @@ function lintFile(context: BuildContext, program: ts.Program, filePath: string):
         return;
       }
 
+      let hasFailure = false;
       try {
         const configuration = findConfiguration(null, filePath);
 
@@ -102,6 +110,7 @@ function lintFile(context: BuildContext, program: ts.Program, filePath: string):
 
         const lintResult = linter.lint();
         if (lintResult && lintResult.failures) {
+          hasFailure = true
           const diagnostics = runTsLintDiagnostics(context, <any>lintResult.failures);
           printDiagnostics(context, DiagnosticsType.TsLint, diagnostics, true, false);
         }
@@ -110,7 +119,7 @@ function lintFile(context: BuildContext, program: ts.Program, filePath: string):
         Logger.debug(`Linter ${e}`);
       }
 
-      resolve();
+      resolve(hasFailure);
     });
 
   });
